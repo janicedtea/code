@@ -13,7 +13,6 @@ player = pygame.transform.scale(pygame.image.load ('kittyplayer.jpg'), (90, 70))
 fps = 60
 timer = pygame.time.Clock()
 
-
 #game variables
 player_x = 170
 player_y = 400
@@ -28,14 +27,16 @@ pygame.display.set_caption('caliGO')
 
 
 #check for player collisions with blocks
-def check_collisions(rect_list, j):
+def check_collisions(rect_list):
     global player_x
     global player_y
     global y_change
     for i in range(len(rect_list)):
-        if rect_list[i].colliderect([player_x, player_y + 60, 90, 10]) and jump == False and y_change > 0:
-            j = True
-    return j
+        if rect_list[i].colliderect([player_x, player_y + 60, 90, 10]) and y_change > 0:
+            player_y = rect_list[i].top - 60
+            y_change = 0
+            return True            
+    return False
 
 
 #update y coordinate of player 
@@ -45,7 +46,7 @@ def update_player(y_pos):
     jump_height = 10
     gravity = 1
     if jump:
-        y_change -= jump_height
+        y_change = -jump_height
         jump = False
     y_pos += y_change
     y_change += gravity
@@ -60,18 +61,20 @@ while running == True:
     screen.blit(player, (player_x, player_y))
     blocks = []
 
-
     for i in range(len(platforms)):
         block = pygame.draw.rect(screen, black, platforms[i], 0, 3)
         blocks.append(block)
 
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP and y_change == 0:
+                jump = True
+
 
     player_y = update_player(player_y)
-    jump = check_collisions(blocks, jump)
+    check_collisions(blocks)
 
     pygame.display.flip()
 pygame.quit()
