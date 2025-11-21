@@ -1,4 +1,6 @@
 import pygame
+import random
+
 
 pygame.init()
 
@@ -9,21 +11,30 @@ gray = (128, 128, 128)
 width = 400
 height = 500
 background = white
-player = pygame.transform.scale(pygame.image.load ('kittyplayer.jpg'), (90, 70))
+player = pygame.transform.scale(pygame.image.load ('kitty.png'), (90, 70))
 fps = 60
 timer = pygame.time.Clock()
+score = 0
+game_over = False
+
 
 #game variables
 player_x = 170
 player_y = 400
-platforms = [[175, 480, 70, 10]]
+platforms = [[175, 480, 70, 10], [50, 330, 70, 10], [1265, 370, 70, 10], [175, 260, 70, 10], [185, 150, 70, 10], [205, 150, 70, 10], [175, 40, 70, 10]]
 jump = False
 y_change = 0
+x_change = 0
+player_speed = 3
 
 
 #screen
 screen = pygame.display.set_mode([width, height])
 pygame.display.set_caption('caliGO')
+
+#font
+font = pygame.font.SysFont(None, 30)
+
 
 
 #check for player collisions with blocks
@@ -32,7 +43,7 @@ def check_collisions(rect_list):
     global player_y
     global y_change
     for i in range(len(rect_list)):
-        if rect_list[i].colliderect([player_x, player_y + 60, 90, 10]) and y_change > 0:
+        if rect_list[i].colliderect([player_x, player_y + 60, 90, 10]) and y_change > 0: #if it's colliding or already jumping, move player say it's colliding
             player_y = rect_list[i].top - 60
             y_change = 0
             return True            
@@ -43,15 +54,28 @@ def check_collisions(rect_list):
 def update_player(y_pos):
     global jump
     global y_change
-    jump_height = 10
+    jump_height = 17
     gravity = 1
-    if jump:
-        y_change = -jump_height
+    if jump == True:
+        y_change = -jump_height # negative y_change is positive jump
         jump = False
     y_pos += y_change
     y_change += gravity
     return y_pos
 
+#movement of platforms
+def update_platforms(my_list, y_pos, change):
+    global score
+    if y_pos < 250 and change < 0:
+        for i in range(len(my_list)):
+            my_list[i][1] -= change
+    else:
+        pass
+    for item in range(len(my_list)):
+        if my_list[item][1] > 500:
+            my_list[item] = [random.randint(10, 320), random.randint(-50, -10), 70, 10]
+            score += 1
+    return my_list
 
 
 running = True
@@ -60,6 +84,8 @@ while running == True:
     screen.fill(background)
     screen.blit(player, (player_x, player_y))
     blocks = []
+    score_text = font.render('score: ' + str(score), True, black, background)
+    screen.blit(score_text, (320, 20))
 
     for i in range(len(platforms)):
         block = pygame.draw.rect(screen, black, platforms[i], 0, 3)
@@ -68,13 +94,40 @@ while running == True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.KEYDOWN:
+        elif event.type == pygame.KEYDOWN: #check when up arrow pressed
             if event.key == pygame.K_UP and y_change == 0:
                 jump = True
+            if event.key == pygame.K_RIGHT:
+                x_change = player_speed
+            if event.key == pygame.K_LEFT:
+                x_change = -player_speed
+
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_RIGHT:
+                x_change = 0
+            if event.key == pygame.K_LEFT:
+                x_change = 0
+
+                
 
 
     player_y = update_player(player_y)
+    player_x += x_change 
+    platforms = update_platforms(platforms, player_y, y_change)
     check_collisions(blocks)
+
+    if x_change > 0:
+        player = pygame.transform.scale(
+          pygame.image.load('kitty.png'), 
+        (90, 70)
+    )
+    elif x_change < 0:
+        image = pygame.image.load('kitty.png')
+        image = pygame.transform.flip(image, True, False)
+        player = pygame.transform.scale(image, (90, 70))
+
+
+
 
     pygame.display.flip()
 pygame.quit()
