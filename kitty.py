@@ -21,7 +21,8 @@ game_over = False
 #game variables
 player_x = 170
 player_y = 400
-platforms = [[175, 480, 70, 10], [50, 330, 70, 10], [1265, 370, 70, 10], [175, 260, 70, 10], [185, 150, 70, 10], [205, 150, 70, 10], [175, 40, 70, 10]]
+platforms = [[175, 480, 90, 10], [50, 330, 90, 10], [125, 370, 90, 10], [175, 260, 90, 10], [185, 150, 90, 10], [205, 150, 90, 10], [175, 40, 90, 10]]
+
 jump = False
 y_change = 0
 x_change = 0
@@ -62,9 +63,6 @@ def check_collisions(rect_list):
             y_change = 0
             return True            
     return False
-
-
-
 
 
 #movement of platforms
