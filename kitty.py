@@ -145,23 +145,37 @@ def check_collisions(rect_list):
 #movement of platforms
 def update_platforms(my_list, y_pos, change):
     global score
+    global player_x
+    min_distance = 100  #min distance from player
+    max_distance = 200  #max distance from player
+
+    #move platforms down if player is high enough
     if y_pos < 250 and change < 0:
         for i in range(len(my_list)):
             my_list[i][1] -= change
-    else:
-        pass
+
+    #respawn platforms that went off screen
     for item in range(len(my_list)):
-        if my_list[item][1] > 500:
-            my_list[item] = [random.randint(10, 320), random.randint(-50, -10), 70, 10]
+        if my_list[item][1] > height:
+            while True:
+                new_x = random.randint(10, width - 80)
+                if abs(new_x - player_x) >= min_distance and abs(new_x - player_x) <= max_distance:
+                    break
+            new_y = random.randint(-50, -10)
+            my_list[item] = [new_x, new_y, 70, 10]
             score += 1
+
     return my_list
+
+
+
 
 #start screen
 def show_start_screen():
     screen.fill(white)
     title = font.render("caliGO", True, black)
     start_text = font.render("the kitty has probably forgiven you by now, press enter", True, black)
-
+    
     screen.blit(title, (width//2 - title.get_width()//2, 150))
     screen.blit(start_text, (width//2 - start_text.get_width()//2, 250))
 
@@ -264,6 +278,5 @@ while running == True:
 
     if game_over == True:
         show_game_over_screen(score, high_score)
-
     pygame.display.flip()
 pygame.quit()
