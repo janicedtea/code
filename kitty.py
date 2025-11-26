@@ -27,11 +27,21 @@ platform_width = 100  #match platform size
 platform_height = 30
 platform_img = pygame.transform.scale(platform_img, (platform_width, platform_height))
 
+#meow
+jump_sound = pygame.mixer.Sound("kittymeow.mp3")
 
 #game variables
 player_x = 170
 player_y = 400
-platforms = [[175, 480, 90, 10], [50, 330, 90, 10], [125, 370, 90, 10], [175, 260, 90, 10], [185, 150, 90, 10], [205, 150, 90, 10], [175, 40, 90, 10]]
+platforms = [
+    [175, 480, 90, 10], 
+    [50, 330, 90, 10], 
+    [125, 370, 90, 10], 
+    [175, 260, 90, 10], 
+    [185, 150, 90, 10], 
+    [205, 150, 90, 10], 
+    [175, 40, 90, 10]
+    ] #hated having to scroll to see all of them lol
 
 jump = False
 y_change = 0
@@ -125,7 +135,7 @@ def update_player(y_pos):
     jump_height = 15
     gravity = 1
     if jump == True:
-        y_change = -jump_height # negative y_change is positive jump
+        y_change = -jump_height #negative y_change is positive jump
         jump = False
     y_pos += y_change
     y_change += gravity
@@ -243,8 +253,9 @@ while running == True:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN: #check when up arrow pressed
-            if event.key == pygame.K_UP and y_change == 0:
+            if event.key == pygame.K_UP and is_grounded:
                 jump = True
+                jump_sound.play()
             if event.key == pygame.K_RIGHT:
                 x_change = player_speed
                 facing_left = False
