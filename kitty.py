@@ -50,14 +50,17 @@ last_background_change = pygame.time.get_ticks()
 
 #birb
 bird_x = 100
-bird_y = 100
-bird_height = 72
-bird_width = 112
+bird_y = 50
+bird_height = 36
+bird_width = 56
 bird_speed = 1
 bird_rect = pygame.Rect(bird_x, bird_y, bird_width, bird_height)
 bird_img1 = pygame.transform.scale(pygame.image.load("bird.png"), (bird_width, bird_height))
 bird_img2 = pygame.transform.scale(pygame.image.load("bird2.png"), (bird_width, bird_height))
+flipped_bird1 = pygame.transform.flip(bird_img1, True, False)
 bird_img = bird_img1
+last_bird_swap = pygame.time.get_ticks()
+bird_swap_interval = 1000
 
 
 
@@ -325,7 +328,20 @@ while running == True:
     bird_rect.x = bird_x
     if bird_x <= 0 or bird_x + bird_width >= width:
         bird_speed *= -1
-    screen.blit(bird_img, (bird_x, bird_y))
+
+    current_time = pygame.time.get_ticks()
+    if current_time - last_bird_swap >= bird_swap_interval:
+        if bird_img == bird_img1:
+            bird_img = bird_img2
+        else:
+            bird_img = bird_img1
+        last_bird_swap = current_time
+
+    if bird_speed < 0:
+        screen.blit(pygame.transform.flip(bird_img, True, False), (bird_x, bird_y))
+    else:
+        screen.blit(bird_img, (bird_x, bird_y))
+
 
     blocks = []
     for p in platforms:
