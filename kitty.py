@@ -21,10 +21,42 @@ timer = pygame.time.Clock()
 score = 0
 game_over = False
 
+#background
+background_img = pygame.image.load("background.png").convert()
+background_img = pygame.transform.scale(background_img, (width, height))
+backgrounds = [
+    pygame.transform.scale(pygame.image.load("background.png"), (width, height)),
+    pygame.transform.scale(pygame.image.load("background1.png"), (width, height)),
+    pygame.transform.scale(pygame.image.load("background2.png"), (width, height)),
+    pygame.transform.scale(pygame.image.load("background3.png"), (width, height)),
+    pygame.transform.scale(pygame.image.load("background4.png"), (width, height)),
+    pygame.transform.scale(pygame.image.load("background5.png"), (width, height)),
+    pygame.transform.scale(pygame.image.load("background6.png"), (width, height)),
+    pygame.transform.scale(pygame.image.load("background7.png"), (width, height)),
+    pygame.transform.scale(pygame.image.load("background8.png"), (width, height)),
+    pygame.transform.scale(pygame.image.load("background9.png"), (width, height)),
+    pygame.transform.scale(pygame.image.load("background10.png"), (width, height)),
+    pygame.transform.scale(pygame.image.load("background11.png"), (width, height)),
+    pygame.transform.scale(pygame.image.load("background12.png"), (width, height)),
+    pygame.transform.scale(pygame.image.load("background13.png"), (width, height)),
+    pygame.transform.scale(pygame.image.load("background14.png"), (width, height)),
+    pygame.transform.scale(pygame.image.load("background15.png"), (width, height)),
+    pygame.transform.scale(pygame.image.load("background16.png"), (width, height)),
+    pygame.transform.scale(pygame.image.load("background17.png"), (width, height)),
+    pygame.transform.scale(pygame.image.load("background18.png"), (width, height)),
+] #woa so many 
+current_background = 0
+background_change_interval = 1000
+last_background_change = pygame.time.get_ticks()
+
+
+
+
+
 #platforms
 platform_img = pygame.image.load('platform_1.png').convert_alpha()
-platform_width = 100  #match platform size
-platform_height = 30
+platform_width = 100  
+platform_height = 50
 platform_img = pygame.transform.scale(platform_img, (platform_width, platform_height))
 
 #meow
@@ -38,7 +70,7 @@ platforms = [
     [50, 330, 90, 10], 
     [125, 370, 90, 10], 
     [175, 260, 90, 10], 
-    [185, 150, 90, 10], 
+    [185, 200, 90, 10], 
     [205, 150, 90, 10], 
     [175, 40, 90, 10]
     ] #hated having to scroll to see all of them lol
@@ -48,6 +80,8 @@ y_change = 0
 x_change = 0
 player_speed = 3
 high_score = 0
+
+last_player_y = player_y
 
 #animation variables
 animation_tracker = 0.0
@@ -163,8 +197,8 @@ def check_collisions(rect_list):
 def update_platforms(my_list, y_pos, change):
     global score
     global player_x
-    min_distance = 100  #min distance from player
-    max_distance = 200  #max distance from player
+    min_distance = 100  
+    max_distance = 200  
 
     #move platforms down if player is high enough
     if y_pos < 250 and change < 0:
@@ -213,7 +247,7 @@ def show_game_over_screen(score, high_score):
 running = True
 while running == True:
     timer.tick(fps)
-    screen.fill(background)
+    screen.blit(backgrounds[current_background], (0, 0))
     #animation system
     if is_grounded:
         animation_tracker += animation_increment
@@ -247,7 +281,6 @@ while running == True:
     for p in platforms:
         screen.blit(platform_img, (p[0], p[1]))
         blocks.append(pygame.Rect(p[0], p[1], platform_width, platform_height))
-
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -287,6 +320,10 @@ while running == True:
     check_collisions(blocks)
     player_x += x_change 
     check_collisions(blocks)
+    current_time = pygame.time.get_ticks()
+    if current_time - last_background_change >= background_change_interval:
+        current_background = (current_background + 1) % len(backgrounds)
+        last_background_change = current_time
 
     if player_y < 488:
         platforms = update_platforms(platforms, player_y, y_change)
