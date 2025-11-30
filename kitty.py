@@ -20,6 +20,7 @@ fps = 60
 timer = pygame.time.Clock()
 score = 0
 game_over = False
+celebrating = False
 
 #background
 background_img = pygame.image.load("background.png").convert()
@@ -50,7 +51,7 @@ last_background_change = pygame.time.get_ticks()
 
 #birb
 bird_x = 100
-bird_y = 50
+bird_y = 150
 bird_height = 36
 bird_width = 56
 bird_speed = 1
@@ -93,6 +94,42 @@ player_speed = 3
 high_score = 0
 
 last_player_y = player_y
+
+celebrate_frames = [
+    pygame.transform.scale(pygame.image.load("yay!.png").convert_alpha(), (width, height)),
+    pygame.transform.scale(pygame.image.load("yay!!.png").convert_alpha(), (width, height)),
+    pygame.transform.scale(pygame.image.load("yay!!!.png").convert_alpha(), (width, height)),]
+
+celebrate_platform = [width//2 - 45, 300, 90, 10]
+celebrate_img = pygame.image.load("yay!.png").convert_alpha()
+celebrate_img = pygame.transform.scale(celebrate_img, (width, height))
+
+celebrate_index = 0
+celebrate_timer = pygame.time.get_ticks()
+celebrate_interval = 500
+
+celebrate_platform_img = pygame.transform.scale(pygame.image.load('celebrationplatform.png').convert_alpha(), (100, 20))
+celebrate_platform_rect = pygame.Rect(width//2 - 50, 300, 100, 20)
+font_large = pygame.font.SysFont(None, 40)
+text_above = font_large.render("yippeeee!!", True, white)
+text_below = font_large.render("you win!!", True, white)
+
+def celebrate():
+    global celebrate_index, celebrate_timer, current_time, player_x, player_y, is_grounded, y_change, player, animation_tracker, animation_index
+    current_time = pygame.time.get_ticks()
+    if current_time - celebrate_timer >= celebrate_interval:
+        celebrate_index = (celebrate_index + 1) % len(celebrate_frames)
+        celebrate_timer = current_time
+    screen.blit(celebrate_frames[celebrate_index], (0, 0))
+    screen.blit(celebrate_platform_img, (celebrate_platform_rect.x, celebrate_platform_rect.y))
+    
+    if is_grounded:
+        animation_tracker += animation_increment
+        animation_index = int(animation_tracker) % len(idle_frames)
+        player = idle_frames[animation_index]
+    screen.blit(player, (player_x, player_y))
+    screen.blit(text_above, (width//2 - text_above.get_width()//2, celebrate_platform_rect.y - 70 - 40))
+    screen.blit(text_below, (width//2 - text_below.get_width()//2, celebrate_platform_rect.y + 20 + 10))
 
 #animation variables
 animation_tracker = 0.0
@@ -248,16 +285,24 @@ def show_game_over_screen(score, high_score):
     screen.fill(white)
     over = font.render("game over, the kitty fell!!", True, black)
     score_text = font.render(f"Score: {score}", True, black)
-    restart_text = font.render("press space to ask the kitty for forgiveness", True, black)
+
 
     screen.blit(over, (width//2 - over.get_width()//2, 150))
     screen.blit(score_text, (width//2 - score_text.get_width()//2, 200))
-    screen.blit(restart_text, (width//2 - restart_text.get_width()//2, 260))
 
 
 running = True
 while running == True:
     timer.tick(fps)
+    if celebrating:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        celebrate()
+        pygame.display.flip()
+        continue
+
     screen.blit(backgrounds[current_background], (0, 0))
     if score > 10 and score < 20:
         current_background = 1
@@ -401,6 +446,10 @@ while running == True:
         y_change = 0
     if score > high_score:
         high_score = score
+    if score > 200 and not celebrating:
+        celebrating = True
+        player_y = celebrate_platform_rect.y - 70
+
 
     if game_over == True:
         show_game_over_screen(score, high_score)
