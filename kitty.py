@@ -25,6 +25,9 @@ timer = pygame.time.Clock()
 score = 0
 game_over = False
 celebrating = False
+coins = 0
+
+
 
 #background
 background_img = pygame.image.load("background.png").convert()
@@ -67,6 +70,15 @@ bird_img = bird_img1
 last_bird_swap = pygame.time.get_ticks()
 bird_swap_interval = 1000
 
+#coin
+coin_width = 20
+coin_height = 20
+coin_img = pygame.transform.scale(pygame.image.load("coin.png"), (coin_width, coin_height))
+coins_list = [
+    pygame.Rect(random.randint(50, width-50), random.randint(50, height-100), coin_width, coin_height)
+]
+for coin in coins_list:
+    screen.blit(coin_img, (coin.x, coin.y))
 
 
 #platforms
@@ -381,6 +393,8 @@ while running == True:
     screen.blit(score_text, (400, 50))
     high_score_text = font.render('high score: ' + str(high_score), True, black, background)
     screen.blit(high_score_text, (400, 20))
+    coin_text = font.render('coins: ' + str(coins), True, black, background)
+    screen.blit(coin_text, (400, 80))
 
 
 
@@ -426,6 +440,15 @@ while running == True:
     player_rect = pygame.Rect(player_x, player_y, 90, 70)
     if player_rect.colliderect(bird_rect):
         game_over = True
+    for coin in coins_list[:]:
+        if player_rect.colliderect(coin):
+            coins += 1
+            coins_list.remove(coin)
+
+    for coin in coins_list:
+        screen.blit(coin_img, (coin.x, coin.y))
+    if len(coins_list) < 1:
+        coins_list.append(pygame.Rect(random.randint(50, width-50), random.randint(50, height-100), coin_width, coin_height))
 
     bird_x += bird_speed
     bird_rect.x = bird_x
@@ -459,7 +482,7 @@ while running == True:
         y_change = 0
     if score > high_score:
         high_score = score
-    if score > 200 and not celebrating:
+    if score > 20 and not celebrating:
         celebrating = True
         player_y = celebrate_platform_rect.y - 70
 
