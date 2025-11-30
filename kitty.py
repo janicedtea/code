@@ -4,6 +4,10 @@ import random
 
 pygame.init()
 
+#music
+pygame.mixer.music.load("music.mp3")
+pygame.mixer.music.play(-1)
+
 #game constants
 white = (255, 255, 255)
 black = (0, 0, 0)
@@ -67,8 +71,8 @@ bird_swap_interval = 1000
 
 #platforms
 platform_img = pygame.image.load('platform_1.png').convert_alpha()
-platform_width = 100  
-platform_height = 50
+platform_width = 75  
+platform_height = 45
 platform_img = pygame.transform.scale(platform_img, (platform_width, platform_height))
 
 #meow
@@ -230,11 +234,11 @@ player_y = update_player(player_y)
 def check_collisions(rect_list):
     global player_x, player_y, y_change, is_grounded
     is_grounded = False
-    player_rect = pygame.Rect(player_x, player_y + 60, 90, 10)  #bottom of player
+    player_rect = pygame.Rect(player_x + 20, player_y + 50, 50, 20)
 
     for block in rect_list:
         if block.colliderect(player_rect) and y_change >= 0:
-            player_y = block.top - 60
+            player_y = block.top - 50
             y_change = 0
             is_grounded = True
             return True
