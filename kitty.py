@@ -3,6 +3,7 @@ import random
 
 
 pygame.init()
+pygame.font.init()
 
 #music
 pygame.mixer.music.load("music.mp3")
@@ -15,6 +16,7 @@ gray = (128, 128, 128)
 width = 600
 height = 500
 background = white
+font = pygame.font.Font("Silkscreen-Regular.ttf", 16)
 #screen
 screen = pygame.display.set_mode([width, height])
 pygame.display.set_caption('caliGO')
@@ -130,7 +132,7 @@ celebrate_facing_left = False
 
 celebrate_platform_img = pygame.transform.scale(pygame.image.load('celebrationplatform.png').convert_alpha(), (100, 20))
 celebrate_platform_rect = pygame.Rect(width//2 - 50, 300, 100, 20)
-font_large = pygame.font.SysFont(None, 40)
+font_large = pygame.font.Font("Silkscreen-Regular.ttf", 40)
 text_above = font_large.render("yippeeee!!", True, white)
 text_below = font_large.render("you win!!", True, white)
 
@@ -230,8 +232,6 @@ def restart():
 
 
 
-#font
-font = pygame.font.SysFont(None, 30)
 
 #update y coordinate of player 
 def update_player(y_pos):
@@ -383,12 +383,7 @@ while running == True:
             player = jump_frames[3]
 
 #scale + flip
-    player = pygame.transform.scale(player, (90, 70))
-    if facing_left:
-        player = pygame.transform.flip(player, True, False)
 
-    screen.blit(player, (player_x, player_y))
-    blocks = []
     score_text = font.render('score: ' + str(score), True, black, background)
     screen.blit(score_text, (400, 50))
     high_score_text = font.render('high score: ' + str(high_score), True, black, background)
@@ -396,6 +391,12 @@ while running == True:
     coin_text = font.render('coins: ' + str(coins), True, black, background)
     screen.blit(coin_text, (400, 80))
 
+
+    player = pygame.transform.scale(player, (90, 70))
+    if facing_left:
+        player = pygame.transform.flip(player, True, False)
+
+    screen.blit(player, (player_x, player_y))
 
 
     blocks = []
@@ -487,7 +488,7 @@ while running == True:
         y_change = 0
     if score > high_score:
         high_score = score
-    if score > 200 and not celebrating:
+    if score > 20 and not celebrating:
         celebrating = True
         player_y = celebrate_platform_rect.y - 70
 
