@@ -22,7 +22,8 @@ screen = pygame.display.set_mode([width, height])
 pygame.display.set_caption('caliGO')
 #more constants
 player = pygame.transform.scale(pygame.image.load ('kitty.png'), (90, 70))
-
+selected_skin = "default"
+unlocked_skins = ["default"]
 
 calico_cat = pygame.transform.scale(
     pygame.image.load("calico.png").convert_alpha(), (90, 70)
@@ -34,7 +35,9 @@ gray_cat = pygame.transform.scale(
 snow_cat = pygame.transform.scale(
     pygame.image.load("snow.png").convert_alpha(), (90, 70)
 )
-
+tuxedo_cat = pygame.transform.scale(
+    pygame.image.load("tuxedo.png").convert_alpha(), (90, 70)
+)
 glorp_cat = pygame.transform.scale(
     pygame.image.load("glorp.png").convert_alpha(), (90, 70)
 )
@@ -47,7 +50,7 @@ celebrating = False
 coins = 0
 selected_skin = "default"
 
-calico_skin = pygame.transform.scale(pygame.image.load ('calico.png'), (90, 70))
+
 
 
 
@@ -218,6 +221,9 @@ calico_jump_frames = get_frames(pygame.image.load('calicojump.png').convert_alph
 snow_idle_frames = get_frames(pygame.image.load('snowidle.png').convert_alpha(), 3)
 snow_jump_frames = get_frames(pygame.image.load('snowjump.png').convert_alpha(), 4)
 
+tuxedo_idle_frames = get_frames(pygame.image.load('tuxedoidle.png').convert_alpha(), 3)
+tuxedo_jump_frames = get_frames(pygame.image.load('tuxedojump.png').convert_alpha(), 4)
+
 glorp_idle_frames = get_frames(pygame.image.load('glorpidle.png').convert_alpha(), 3)
 glorp_jump_frames = get_frames(pygame.image.load('glorpjump.png').convert_alpha(), 4)
 
@@ -352,10 +358,11 @@ def show_shop_screen():
     selected_item = 0
 
     shop_items = [
-        {"name": "Calico Cat", "cost": 5, "image": calico_cat},
-        {"name": "Gray Cat", "cost": 8, "image": gray_cat},
-        {"name": "Snow Cat", "cost": 10, "image": snow_cat},
-        {"name": "Glorp Cat", "cost": 15, "image": glorp_cat}
+        {"name": "Calico Cat", "cost": 5, "image": calico_cat, "skin": "calico"},
+        {"name": "Gray Cat", "cost": 8, "image": gray_cat, "skin": "default"},
+        {"name": "Snow Cat", "cost": 10, "image": snow_cat, "skin": "snow"},
+        {"name": "Tuxedo Cat", "cost": 15, "image": tuxedo_cat, "skin": "tuxedo"},
+        {"name": "Glorp Cat", "cost": 15, "image": glorp_cat, "skin": "glorp"}
     ]
 
     while shop_open:
@@ -368,7 +375,8 @@ def show_shop_screen():
         y = 150
         for i, item in enumerate(shop_items):
             color = (0, 0, 255) if i == selected_item else black
-            text = font.render(f"{item['name']} - {item['cost']} coins", True, color)
+            status = "OWNED" if item["skin"] in unlocked_skins else f"{item['cost']} coins"
+            text = font.render(f"{item['name']} - {status}", True, color)
             screen.blit(text, (100, y))
             y += 50
 
@@ -393,14 +401,15 @@ def show_shop_screen():
                     selected_item = (selected_item + 1) % len(shop_items)
                 elif event.key == pygame.K_b:
                     item = shop_items[selected_item]
-                    if coins >= item["cost"]:
+                    skin = item["skin"]
+                    #equip if unlocked
+                    if skin in unlocked_skins:
+                        selected_skin = skin
+                    #try to buy
+                    elif coins >= item["cost"]:
                         coins -= item["cost"]
-                        if item["name"] == "Calico Cat":
-                            selected_skin = "calico"
-                        elif item["name"] == "Snow Cat":
-                            selected_skin = "snow"
-                        elif item["name"] == "Glorp Cat":
-                            selected_skin = "glorp"
+                        unlocked_skins.append(skin)
+                        selected_skin = skin
 
 
 
@@ -474,6 +483,9 @@ while running:
     elif selected_skin == "snow":
         idle = snow_idle_frames
         jump_anim = snow_jump_frames
+    elif selected_skin == "tuxedo":
+        idle = tuxedo_idle_frames
+        jump_anim = tuxedo_jump_frames
     elif selected_skin == "glorp":
         idle = glorp_idle_frames
         jump_anim = glorp_jump_frames
