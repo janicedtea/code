@@ -22,12 +22,23 @@ screen = pygame.display.set_mode([width, height])
 pygame.display.set_caption('caliGO')
 #more constants
 player = pygame.transform.scale(pygame.image.load ('kitty.png'), (90, 70))
+
+
 calico_cat = pygame.transform.scale(
     pygame.image.load("calico.png").convert_alpha(), (90, 70)
 )
 gray_cat = pygame.transform.scale(
     pygame.image.load("kitty.png").convert_alpha(), (90, 70)
 )
+
+snow_cat = pygame.transform.scale(
+    pygame.image.load("snow.png").convert_alpha(), (90, 70)
+)
+
+glorp_cat = pygame.transform.scale(
+    pygame.image.load("glorp.png").convert_alpha(), (90, 70)
+)
+
 fps = 60
 timer = pygame.time.Clock()
 score = 0
@@ -35,8 +46,8 @@ game_over = False
 celebrating = False
 coins = 0
 selected_skin = "default"
-skin_unlocked = False
-calico_skin = pygame.transform.scale(pygame.image.load ('calicoskin.png'), (90, 70))
+
+calico_skin = pygame.transform.scale(pygame.image.load ('calico.png'), (90, 70))
 
 
 
@@ -155,8 +166,8 @@ def celebrate():
     screen.blit(celebrate_platform_img, (celebrate_platform_rect.x, celebrate_platform_rect.y))
     
     animation_tracker += animation_increment
-    animation_index = int(animation_tracker) % len(idle_frames)
-    player = idle_frames[animation_index]
+    animation_index = int(animation_tracker) % 3
+    player = idle[animation_index]
 
     global celebrate_facing_left, celebrate_flip_timer
     now = pygame.time.get_ticks()
@@ -197,17 +208,18 @@ def get_frames(sheet, count):
         frame_list.append(frame)
     return frame_list
 
-idle_sheet = pygame.image.load('idle.png').convert_alpha()
-idle_frames = get_frames(idle_sheet, 3)
+gray_idle_frames = get_frames(pygame.image.load('idle.png').convert_alpha(), 3)
+gray_jump_frames = get_frames(pygame.image.load('jump.png').convert_alpha(), 4)
 
-jump_sheet = pygame.image.load('jump.png').convert_alpha()
-jump_frames = get_frames(jump_sheet, 4)
 
-alt_idle_sheet = pygame.image.load('calicoidle.png').convert_alpha()
-alt_idle_frames = get_frames(alt_idle_sheet, 3)
+calico_idle_frames = get_frames(pygame.image.load('calicoidle.png').convert_alpha(), 3)
+calico_jump_frames = get_frames(pygame.image.load('calicojump.png').convert_alpha(), 4)
 
-alt_jump_sheet = pygame.image.load('calicojump.png').convert_alpha()
-alt_jump_frames = get_frames(alt_jump_sheet, 4)
+snow_idle_frames = get_frames(pygame.image.load('snowidle.png').convert_alpha(), 3)
+snow_jump_frames = get_frames(pygame.image.load('snowjump.png').convert_alpha(), 4)
+
+glorp_idle_frames = get_frames(pygame.image.load('glorpidle.png').convert_alpha(), 3)
+glorp_jump_frames = get_frames(pygame.image.load('glorpjump.png').convert_alpha(), 4)
 
 #restart
 def restart():
@@ -335,13 +347,15 @@ def show_game_over_screen(score, high_score):
 
 #shop
 def show_shop_screen():
-    global player, coins, skin_unlocked
+    global player, coins, selected_item, selected_skin
     shop_open = True
     selected_item = 0
 
     shop_items = [
         {"name": "Calico Cat", "cost": 5, "image": calico_cat},
-        {"name": "Gray Cat",   "cost": 8, "image": gray_cat},
+        {"name": "Gray Cat", "cost": 8, "image": gray_cat},
+        {"name": "Snow Cat", "cost": 10, "image": snow_cat},
+        {"name": "Glorp Cat", "cost": 15, "image": glorp_cat}
     ]
 
     while shop_open:
@@ -383,9 +397,13 @@ def show_shop_screen():
                         coins -= item["cost"]
                         player = item["image"]
                         if item["name"] == "Calico Cat":
-                            skin_unlocked = True
-                        elif item["name"] == "Gray Cat":
-                            skin_unlocked = False
+                            selected_skin = "calico"
+                        elif item["name"] == "Snow Cat":
+                            selected_skin = "snow"
+                        elif item["name"] == "Glorp Cat":
+                            selected_skin = "glorp"
+
+
 
 
 
@@ -451,12 +469,15 @@ while running:
     screen.blit(backgrounds[current_background], (0, 0))
 
     #player animation
-    if skin_unlocked:
-        idle = alt_idle_frames
-        jump_anim = alt_jump_frames
+    if selected_skin == "calico":
+        idle = calico_idle_frames
+        jump_anim = calico_jump_frames
+    elif selected_skin == "snow":
+        idle = snow_idle_frames
+        jump_anim = snow_jump_frames
     else:
-        idle = idle_frames
-        jump_anim = jump_frames
+        idle = gray_idle_frames
+        jump_anim = gray_jump_frames
 
     if is_grounded:
         player = idle[int(animation_tracker) % len(idle)]
