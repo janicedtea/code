@@ -374,8 +374,8 @@ def show_shop_screen():
 
         # Preview selected item
         screen.blit(shop_items[selected_item]["image"], (450, 150))
-        screen.blit(font.render("Press B to buy", True, black), (width//2 - 60, 300))
-        screen.blit(font.render("Press ESC to exit", True, black), (width//2 - 70, 350))
+        screen.blit(font.render("press b to buy", True, black), (width//2 - 60, 400))
+        screen.blit(font.render("press esc to exit", True, black), (width//2 - 70, 450))
         
         pygame.display.flip()
 
@@ -395,7 +395,6 @@ def show_shop_screen():
                     item = shop_items[selected_item]
                     if coins >= item["cost"]:
                         coins -= item["cost"]
-                        player = item["image"]
                         if item["name"] == "Calico Cat":
                             selected_skin = "calico"
                         elif item["name"] == "Snow Cat":
@@ -419,9 +418,7 @@ while running:
             running = False
 
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                running = False
-            elif event.key == pygame.K_UP and is_grounded:
+            if event.key == pygame.K_UP and is_grounded:
                 jump = True
                 jump_sound.play()
             elif event.key == pygame.K_RIGHT:
@@ -467,6 +464,8 @@ while running:
         player_y = celebrate_platform_rect.y - 70
 
     screen.blit(backgrounds[current_background], (0, 0))
+    animation_tracker += animation_increment
+
 
     #player animation
     if selected_skin == "calico":
@@ -475,6 +474,9 @@ while running:
     elif selected_skin == "snow":
         idle = snow_idle_frames
         jump_anim = snow_jump_frames
+    elif selected_skin == "glorp":
+        idle = glorp_idle_frames
+        jump_anim = glorp_jump_frames
     else:
         idle = gray_idle_frames
         jump_anim = gray_jump_frames
