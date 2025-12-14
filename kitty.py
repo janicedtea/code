@@ -79,7 +79,7 @@ backgrounds = [
     pygame.transform.scale(pygame.image.load("background18.png"), (width, height)),
 ] #woa so many 
 current_background = 0
-last_background_change = pygame.time.get_ticks()
+
 
 #birb
 bird_x = 100
@@ -330,14 +330,10 @@ def show_start_screen():
     screen.fill(white)
     title = font.render("caliGO", True, black)
     start_text = font.render("play (press enter)", True, black)
-    options_text = font.render("options (press 1)", True, black)
-    shop_text = font.render("shop (press 2)", True, black)
     
     
     screen.blit(title, (width//2 - title.get_width()//2, 100))
     screen.blit(start_text, (width//2 - start_text.get_width()//2, 200))
-    screen.blit(options_text, (width//2 - options_text.get_width()//2, 300))
-    screen.blit(shop_text, (width//2 - shop_text.get_width()//2, 400))
 
     pygame.display.flip()
 
@@ -438,7 +434,7 @@ while running:
                 facing_left = True
             elif event.key == pygame.K_SPACE:
                 show_start_screen()
-            elif event.key == pygame.K_2:
+            elif event.key == pygame.K_1:
                 show_shop_screen()
             elif event.key == pygame.K_RETURN and game_over:
                 restart()
@@ -472,7 +468,44 @@ while running:
         celebrating = True
         player_y = celebrate_platform_rect.y - 70
 
+    
     screen.blit(backgrounds[current_background], (0, 0))
+    if score > 10 and score < 20:
+        current_background = 1
+    if score > 20 and score < 30:
+        current_background = 2
+    if score > 30 and score < 40:
+        current_background = 3
+    if score > 50 and score < 60:
+        current_background = 4  
+    if score > 60 and score < 70:
+        current_background = 5
+    if score > 70 and score < 80:
+        current_background = 6
+    if score > 80 and score < 90:
+        current_background = 7
+    if score > 90 and score < 100:
+        current_background = 8
+    if score > 100 and score < 110:
+        current_background = 9
+    if score > 110 and score < 120:
+        current_background = 10
+    if score > 120 and score < 130:
+        current_background = 11
+    if score > 130 and score < 140:
+        current_background = 12
+    if score > 140 and score < 150:
+        current_background = 13
+    if score > 150 and score < 160:
+        current_background = 14
+    if score > 160 and score < 170:
+        current_background = 15
+    if score > 170 and score < 180:
+        current_background = 16
+    if score > 180 and score < 190:
+        current_background = 17
+    if score > 190 and score < 200:
+        current_background = 18
     animation_tracker += animation_increment
 
 
@@ -546,13 +579,20 @@ while running:
     if len(coins_list) < 1:
         coins_list.append(pygame.Rect(random.randint(50, width-50), random.randint(0,height//4), coin_width, coin_height))
 
-    score_text = font.render(f'Score: {score}', True, black)
-    high_score_text = font.render(f'High Score: {high_score}', True, black)
-    coin_text = font.render(f'Coins: {coins}', True, black)
+    if score > 100:
+        score_text = font.render(f'Score: {score}', True, white)
+        high_score_text = font.render(f'High Score: {high_score}', True, white)
+        coin_text = font.render(f'Coins: {coins}', True, white)
+    else:
+        score_text = font.render(f'Score: {score}', True, black)
+        high_score_text = font.render(f'High Score: {high_score}', True, black)
+        coin_text = font.render(f'Coins: {coins}', True, black)  
+
     screen.blit(score_text, (400, 50))
     screen.blit(high_score_text, (400, 20))
     screen.blit(coin_text, (400, 80))
-    
+
+
     if game_over:
         show_game_over_screen(score, high_score)
 
